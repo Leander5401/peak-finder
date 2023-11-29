@@ -8,19 +8,26 @@ import {
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import getCountries from "../../api/getCountries";
 import CountriesResponse from "../../interfaces/CountriesResponse";
 
 function createSelect({
   countries,
   handleMenuItemClick,
+  sok,
 }: {
   countries: string[];
   handleMenuItemClick(country: string): void;
+  sok: string;
 }): JSX.Element {
   return (
     <FormControl sx={{ m: 1, minWidth: 200 }}>
-      <InputLabel id="browseSelectLabel">Land</InputLabel>
+      {sok === "" && (
+        <InputLabel id="browseSelectLabel" sx={{}}>
+          Land
+        </InputLabel>
+      )}
       <Select
         labelId="browseSelectLabel"
         label="Land"
@@ -44,6 +51,7 @@ function createSelect({
 
 export default function Browse(): JSX.Element {
   const navigate = useNavigate();
+  const sok = useSelector((state: any) => state.search.searchTerm);
 
   // State for the selected country
   const { isPending, isError, data, error } = useQuery<CountriesResponse>({
@@ -57,7 +65,7 @@ export default function Browse(): JSX.Element {
   };
 
   if (isPending) {
-    return createSelect({ countries: [], handleMenuItemClick });
+    return createSelect({ countries: [], handleMenuItemClick, sok });
   }
 
   if (isError) {
@@ -69,8 +77,8 @@ export default function Browse(): JSX.Element {
   countries.sort((a, b) => a.localeCompare(b));
 
   if (!countries) {
-    return createSelect({ countries: [], handleMenuItemClick });
+    return createSelect({ countries: [], handleMenuItemClick, sok });
   }
 
-  return createSelect({ countries, handleMenuItemClick });
+  return createSelect({ countries, handleMenuItemClick, sok });
 }
